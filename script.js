@@ -1,32 +1,53 @@
-const countries = [
-  { name: 'Poland', lat: 51.9194, lon: 19.1451 },
-  { name: 'Germany', lat: 51.1657, lon: 10.4515 },
-  { name: 'France', lat: 46.2276, lon: 2.2137 },
-  { name: 'Italy', lat: 41.8719, lon: 12.5674 },
-  { name: 'Spain', lat: 40.4637, lon: -3.7492 },
-  { name: 'United Kingdom', lat: 55.3781, lon: -3.436 },
-  { name: 'Portugal', lat: 39.3999, lon: -8.2245 },
-  { name: 'Netherlands', lat: 52.1326, lon: 5.2913 },
-  { name: 'Sweden', lat: 60.1282, lon: 18.6435 },
-  { name: 'Norway', lat: 60.472, lon: 8.4689 },
-  { name: 'Finland', lat: 61.9241, lon: 25.7482 },
-  { name: 'Greece', lat: 39.0742, lon: 21.8243 },
-  { name: 'Turkey', lat: 38.9637, lon: 35.2433 },
-  { name: 'Egypt', lat: 26.8206, lon: 30.8025 },
-  { name: 'Morocco', lat: 31.7917, lon: -7.0926 },
-  { name: 'Algeria', lat: 28.0339, lon: 1.6596 },
-  { name: 'Canada', lat: 56.1304, lon: -106.3468 },
-  { name: 'United States', lat: 37.0902, lon: -95.7129 },
-  { name: 'Mexico', lat: 23.6345, lon: -102.5528 },
-  { name: 'Brazil', lat: -14.235, lon: -51.9253 },
-  { name: 'Argentina', lat: -38.4161, lon: -63.6167 },
-  { name: 'Japan', lat: 36.2048, lon: 138.2529 },
-  { name: 'Australia', lat: -25.2744, lon: 133.7751 },
-  { name: 'India', lat: 20.5937, lon: 78.9629 },
-  { name: 'China', lat: 35.8617, lon: 104.1954 },
-  { name: 'South Korea', lat: 35.9078, lon: 127.7669 },
-  { name: 'Thailand', lat: 15.87, lon: 100.9925 },
-  { name: 'South Africa', lat: -30.5595, lon: 22.9375 }
+// Themes: each theme has a name, type ('geo' or 'word') and items
+const THEMES = [
+  {
+    name: 'Kraje',
+    type: 'geo',
+    items: [
+      { name: 'Polska', lat: 51.9194, lon: 19.1451 },
+      { name: 'Niemcy', lat: 51.1657, lon: 10.4515 },
+      { name: 'Francja', lat: 46.2276, lon: 2.2137 },
+      { name: 'Włochy', lat: 41.8719, lon: 12.5674 },
+      { name: 'Hiszpania', lat: 40.4637, lon: -3.7492 },
+      { name: 'Wielka Brytania', lat: 55.3781, lon: -3.436 },
+      { name: 'Portugalia', lat: 39.3999, lon: -8.2245 },
+      { name: 'Holandia', lat: 52.1326, lon: 5.2913 },
+      { name: 'Szwecja', lat: 60.1282, lon: 18.6435 },
+      { name: 'Norwegia', lat: 60.472, lon: 8.4689 }
+    ]
+  },
+  {
+    name: 'Ziemia',
+    type: 'word',
+    items: [
+      'Ocean',
+      'Góra',
+      'Rzeka',
+      'Pustynia',
+      'Wyspa',
+      'Lodowiec',
+      'Dolina',
+      'Jezioro',
+      'Wulkan',
+      'Równina'
+    ]
+  },
+  {
+    name: 'Handel',
+    type: 'word',
+    items: [
+      'Złoto',
+      'Sól',
+      'Futro',
+      'Ropa',
+      'Herbata',
+      'Bawełna',
+      'Przyprawy',
+      'Jedwab',
+      'Orzechy',
+      'Kawa'
+    ]
+  }
 ];
 
 const MAX_ATTEMPTS = 6;
@@ -35,22 +56,27 @@ const countryInput = document.getElementById('country-input');
 const historyEl = document.getElementById('history');
 const messageEl = document.getElementById('message');
 const attemptsLeftEl = document.getElementById('attempts-left');
-const targetNameEl = document.getElementById('target-name');
+const themeNameEl = document.getElementById('theme-name');
 const newGameButton = document.getElementById('new-game');
 const countryOptions = document.getElementById('country-options');
 
-let targetCountry = null;
+let currentTheme = null;
+let target = null;
 let attempts = [];
 let gameOver = false;
 
-function initDatalist() {
-  countryOptions.innerHTML = countries
-    .map((country) => `<option value="${country.name}"></option>`)
+function initDatalist(items) {
+  countryOptions.innerHTML = items
+    .map((it) => `<option value="${typeof it === 'string' ? it : it.name}"></option>`)
     .join('');
 }
 
-function randomCountry() {
-  return countries[Math.floor(Math.random() * countries.length)];
+function randomFrom(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function randomTheme() {
+  return randomFrom(THEMES);
 }
 
 function toRadians(deg) {
@@ -98,21 +124,33 @@ function renderHistory() {
 
   historyEl.innerHTML = attempts
     .map((attempt) => {
-      const tone = attempt.isCorrect
-        ? 'good'
-        : attempt.distance < 1500
+      if (currentTheme.type === 'geo') {
+        const tone = attempt.isCorrect
           ? 'good'
-          : attempt.distance < 5000
-            ? 'warn'
-            : 'bad';
+          : attempt.distance < 1500
+            ? 'good'
+            : attempt.distance < 5000
+              ? 'warn'
+              : 'bad';
 
-      return `
-        <div class="guess-row">
-          <div class="guess-country">${attempt.name}</div>
-          <div class="guess-metric">${attempt.direction}</div>
-          <div class="guess-value ${tone}">${attempt.distance} km</div>
-        </div>
-      `;
+        return `
+          <div class="guess-row">
+            <div class="guess-country">${attempt.name}</div>
+            <div class="guess-metric">${attempt.direction}</div>
+            <div class="guess-value ${tone}">${attempt.distance} km</div>
+          </div>
+        `;
+      } else {
+        // word theme: show basic hint (length and first letter)
+        const tone = attempt.isCorrect ? 'good' : 'bad';
+        return `
+          <div class="guess-row">
+            <div class="guess-country">${attempt.name}</div>
+            <div class="guess-metric">Długość: ${attempt.length}</div>
+            <div class="guess-value ${tone}">Pierwsza litera: ${attempt.first}</div>
+          </div>
+        `;
+      }
     })
     .join('');
 }
@@ -126,85 +164,128 @@ function endGame(won) {
   gameOver = true;
 
   if (won) {
-    setMessage(`Gratulacje! ${targetCountry.name} to poprawna odpowiedź.`, 'success');
+    setMessage(`Gratulacje! ${typeof target === 'string' ? target : target.name} to poprawna odpowiedź.`, 'success');
   } else {
-    setMessage(`Koniec gry. Poprawna odpowiedź to: ${targetCountry.name}.`, 'error');
+    setMessage(`Koniec gry. Poprawna odpowiedź to: ${typeof target === 'string' ? target : target.name}.`, 'error');
   }
 
-  targetNameEl.textContent = targetCountry.name;
+  // reveal target
+  // if geo, show name; if word, show word
+  // already written in setMessage
 }
 
-function handleGuess(name) {
+function handleGuess(input) {
   if (gameOver) return;
 
-  const normalizedInput = name.trim();
+  const normalizedInput = input.trim();
   if (!normalizedInput) {
-    setMessage('Wpisz nazwę kraju.', 'error');
+    setMessage('Wpisz odpowiedź.', 'error');
     return;
   }
 
-  const exactMatch = countries.find(
-    (country) => country.name.toLowerCase() === normalizedInput.toLowerCase()
-  );
+  // find match in current theme
+  let match = null;
+  if (currentTheme.type === 'geo') {
+    match = currentTheme.items.find(
+      (c) => c.name.toLowerCase() === normalizedInput.toLowerCase()
+    );
+    if (!match) {
+      setMessage('Takiego kraju nie ma na liście tematów. Spróbuj innego wpisu.', 'error');
+      return;
+    }
 
-  if (!exactMatch) {
-    setMessage('Takiego kraju nie ma na liście. Spróbuj ponownie.', 'error');
-    return;
+    if (attempts.some((a) => a.name.toLowerCase() === match.name.toLowerCase())) {
+      setMessage('Ten kraj już próbowałeś. Wybierz inny.', 'error');
+      return;
+    }
+
+    const distance = Math.round(
+      haversineKm(match.lat, match.lon, target.lat, target.lon)
+    );
+
+    const direction = getDirection(match.lat, match.lon, target.lat, target.lon);
+
+    const guessRecord = {
+      name: match.name,
+      distance,
+      direction,
+      isCorrect: match.name.toLowerCase() === target.name.toLowerCase()
+    };
+
+    attempts.push(guessRecord);
+    renderHistory();
+    updateAttemptsLeft();
+
+    if (guessRecord.isCorrect) {
+      endGame(true);
+      return;
+    }
+
+    if (attempts.length >= MAX_ATTEMPTS) {
+      endGame(false);
+      return;
+    }
+
+    const remaining = MAX_ATTEMPTS - attempts.length;
+    setMessage(`Błąd! Masz jeszcze ${remaining} prób. Kierunek: ${direction}.`, 'info');
+  } else {
+    // word theme
+    match = currentTheme.items.find(
+      (it) => it.toLowerCase() === normalizedInput.toLowerCase()
+    );
+
+    if (!match) {
+      setMessage('Nie ma takiego słowa w bieżącym temacie. Spróbuj ponownie.', 'error');
+      return;
+    }
+
+    if (attempts.some((a) => a.name.toLowerCase() === match.toLowerCase())) {
+      setMessage('Już próbowałeś tego słowa.', 'error');
+      return;
+    }
+
+    const guessRecord = {
+      name: match,
+      length: match.length,
+      first: match[0].toUpperCase(),
+      isCorrect: match.toLowerCase() === target.toLowerCase()
+    };
+
+    attempts.push(guessRecord);
+    renderHistory();
+    updateAttemptsLeft();
+
+    if (guessRecord.isCorrect) {
+      endGame(true);
+      return;
+    }
+
+    if (attempts.length >= MAX_ATTEMPTS) {
+      endGame(false);
+      return;
+    }
+
+    const remaining = MAX_ATTEMPTS - attempts.length;
+    setMessage(`Niepoprawne. Masz jeszcze ${remaining} prób. Podpowiedź: słowo ma ${guessRecord.length} liter.`, 'info');
   }
-
-  if (attempts.some((attempt) => attempt.name.toLowerCase() === exactMatch.name.toLowerCase())) {
-    setMessage('Ten kraj już próbowałeś. Wybierz inny.', 'error');
-    return;
-  }
-
-  const distance = Math.round(
-    haversineKm(
-      exactMatch.lat,
-      exactMatch.lon,
-      targetCountry.lat,
-      targetCountry.lon
-    )
-  );
-
-  const direction = getDirection(
-    exactMatch.lat,
-    exactMatch.lon,
-    targetCountry.lat,
-    targetCountry.lon
-  );
-
-  const guessRecord = {
-    name: exactMatch.name,
-    distance,
-    direction,
-    isCorrect: exactMatch.name.toLowerCase() === targetCountry.name.toLowerCase()
-  };
-
-  attempts.push(guessRecord);
-  renderHistory();
-  updateAttemptsLeft();
-
-  if (guessRecord.isCorrect) {
-    endGame(true);
-    return;
-  }
-
-  if (attempts.length >= MAX_ATTEMPTS) {
-    endGame(false);
-    return;
-  }
-
-  const remaining = MAX_ATTEMPTS - attempts.length;
-  setMessage(`Błąd! Masz jeszcze ${remaining} prób. Kierunek: ${direction}.`, 'info');
 }
 
 function resetGame() {
   attempts = [];
   gameOver = false;
-  targetCountry = randomCountry();
-  targetNameEl.textContent = '?';
+  currentTheme = randomTheme();
+
+  // pick target depending on type
+  if (currentTheme.type === 'geo') {
+    target = randomFrom(currentTheme.items);
+  } else {
+    target = randomFrom(currentTheme.items);
+  }
+
+  themeNameEl.textContent = currentTheme.name;
+  initDatalist(currentTheme.items);
   countryInput.value = '';
-  setMessage('Nowa gra. Wpisz nazwę kraju i zacznij zgadywać.');
+  setMessage('Nowa gra. Wpisz odpowiedź i zacznij zgadywać.');
   updateAttemptsLeft();
   renderHistory();
 }
@@ -217,5 +298,5 @@ guessForm.addEventListener('submit', (event) => {
 
 newGameButton.addEventListener('click', resetGame);
 
-initDatalist();
+// initialize
 resetGame();

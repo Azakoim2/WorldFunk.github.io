@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Worldle</title>
+    <title>Worldle - WorldFunk</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <main class="app">
       <header class="topbar">
         <div>
-          <p class="eyebrow">Geo Guessing Game</p>
+          <p class="eyebrow">Gra zgadywanka</p>
           <h1>Worldle</h1>
         </div>
         <button id="new-game" class="secondary" type="button">Nowa gra</button>
@@ -18,21 +18,21 @@
 
       <section class="panel status-panel">
         <div>
-          <span class="label">Pozostało prób</span>
-          <strong id="attempts-left">6</strong>
+          <span class="label">Temat</span>
+          <strong id="theme-name">...</strong>
         </div>
         <div>
-          <span class="label">Cel</span>
-          <strong id="target-name">?</strong>
+          <span class="label">Pozostało prób</span>
+          <strong id="attempts-left">6</strong>
         </div>
       </section>
 
       <form id="guess-form" class="guess-form">
-        <label for="country-input" class="sr-only">Wpisz nazwę kraju</label>
+        <label for="country-input" class="sr-only">Wpisz odpowiedź</label>
         <input
           id="country-input"
           list="country-options"
-          placeholder="Wpisz nazwę kraju..."
+          placeholder="Wpisz swoją odpowiedź..."
           autocomplete="off"
         />
         <datalist id="country-options"></datalist>

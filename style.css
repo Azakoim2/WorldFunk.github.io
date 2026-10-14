@@ -1,16 +1,17 @@
 :root {
-  --bg: #0b1220;
-  --panel: #101a2c;
-  --panel-alt: #16253b;
-  --primary: #4fd1c5;
-  --primary-dark: #2aa4a1;
+  --bg: #050006;
+  --panel: #07060b;
+  --panel-alt: #0b0712;
+  --primary: #9b6bff;
+  --primary-2: #6a3dff;
+  --glow: rgba(138, 79, 255, 0.18);
   --text: #eaf2ff;
   --muted: #b7c2d9;
   --danger: #ff7a7a;
   --success: #6ee7a8;
   --warning: #fbbf24;
-  --border: rgba(255, 255, 255, 0.09);
-  --shadow: rgba(11, 18, 32, 0.5);
+  --border: rgba(255, 255, 255, 0.06);
+  --shadow: rgba(7, 6, 11, 0.7);
 }
 
 * {
@@ -22,14 +23,14 @@ body {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  font-family: Arial, Helvetica, sans-serif;
-  background: radial-gradient(circle at top, #12253d 0%, var(--bg) 42%);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: radial-gradient(circle at 20% 10%, rgba(107,58,255,0.18) 0%, transparent 15%), radial-gradient(circle at 80% 90%, rgba(70,30,160,0.12) 0%, transparent 12%), linear-gradient(180deg, #030005 0%, var(--bg) 100%);
   color: var(--text);
 }
 
 .app {
-  width: min(92vw, 760px);
-  padding: 30px 22px 26px;
+  width: min(92vw, 780px);
+  padding: 34px 26px 28px;
 }
 
 .topbar {
@@ -49,33 +50,35 @@ body {
 
 h1 {
   margin: 0;
-  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
 }
 
 .panel {
-  background: rgba(16, 26, 44, 0.85);
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.01));
   border: 1px solid var(--border);
-  border-radius: 18px;
-  box-shadow: 0 12px 28px var(--shadow);
+  border-radius: 16px;
+  box-shadow: 0 12px 48px var(--shadow), 0 0 40px var(--glow) inset;
+  position: relative;
 }
 
 .status-panel {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-  padding: 22px 20px;
+  padding: 18px 18px;
   margin-bottom: 18px;
+  align-items: center;
 }
 
 .label {
   display: block;
   color: var(--muted);
   font-size: 12px;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
 }
 
 .status-panel strong {
-  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  font-size: clamp(1.2rem, 3vw, 1.6rem);
 }
 
 .guess-form {
@@ -94,9 +97,10 @@ button {
 
 input {
   width: 100%;
-  padding: 16px 18px;
-  background: rgba(255, 255, 255, 0.04);
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.02);
   color: var(--text);
+  outline: none;
 }
 
 input::placeholder {
@@ -105,15 +109,16 @@ input::placeholder {
 
 button {
   padding: 0 18px;
-  background: linear-gradient(180deg, var(--primary), var(--primary-dark));
-  color: #062b2d;
+  background: linear-gradient(180deg, var(--primary), var(--primary-2));
+  color: #fff;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition: transform 0.12s ease, opacity 0.12s ease;
+  box-shadow: 0 8px 28px rgba(106,61,255,0.18);
 }
 
 button:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 button.secondary {
@@ -129,12 +134,12 @@ button.secondary {
 }
 
 .results-panel {
-  padding: 18px 16px 10px;
+  padding: 14px 12px 10px;
 }
 
 .results-panel h2 {
-  margin: 0 0 14px;
-  font-size: 1.1rem;
+  margin: 0 0 12px;
+  font-size: 1.05rem;
 }
 
 .history {
@@ -144,10 +149,10 @@ button.secondary {
 
 .guess-row {
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr 0.9fr;
-  gap: 8px;
+  grid-template-columns: 1.4fr 0.8fr 0.8fr;
+  gap: 10px;
   align-items: center;
-  background: var(--panel-alt);
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 12px 14px;
