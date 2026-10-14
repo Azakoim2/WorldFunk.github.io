@@ -1,143 +1,112 @@
-/* ===== ZMIENNE GŁÓWNE ===== */
 :root {
-  --color: #6e7b98;
-  --bg: #2b2d3c;
-  --bg2: #13141c;
-  --bg3: #313448;
-
-  --primary: #6a5dff;
-  --primary-2: #5a4bff;
-  --glow: rgba(106,93,255,0.10);
-
-  --text: #e6e9ef;
-  --muted: #9aa0b1;
-  --cell-bg: rgba(255,255,255,0.02);
-  --cell-border: rgba(138,140,150,0.12);
-  --key-bg: #6b6a78;
-  --key-border: rgba(255,255,255,0.04);
-  --green: #6ee7a8;
-  --yellow: #fbbf24;
-  --shadow: rgba(0,0,0,0.6);
-  --frame-width: 3px;
-
-  /* VARIABLES FOR TILE / BOARD / KEY (appearance by names) */
-  /* Tile / Cell */
-  --tile-size: 62px; /* square size */
-  --tile-border-width: 2px;
-  --tile-border-color: #3a3a3c;
-  --tile-border-color-filled: #565758;
-  --tile-radius: 0;
-  --tile-font-size: 2rem;
-  --tile-font-weight: 700;
-  --tile-text-transform: uppercase;
-  --tile-color: #ffffff;
+  /* Tło */
+  --bg-color: #121213;
   --tile-bg: transparent;
-  --tile-transition: background-color 0.2s, border-color 0.2s;
+  --tile-border: #3a3a3c;
+  --tile-border-filled: #565758;
 
-  /* States */
-  --color-correct: #6aaa64; /* zielony */
-  --color-present: #c9b458; /* żółty */
-  --color-absent: #787c7e;  /* szary */
+  /* Kolory stanów */
+  --correct: #6aaa64;      /* zielony */
+  --present: #c9b458;      /* żółty */
+  --absent: #3a3a3c;       /* ciemny szary */
 
-  /* Board */
-  --board-rows: 6;
-  --board-columns: 6;
-  --board-gap: 5px;
-
-  /* Keyboard */
-  --key-height: 58px;
-  --key-min-width: 43px;
-  --key-border-radius: 4px;
-  --key-font-weight: 700;
-  --key-font-size: 0.85rem;
-  --key-bg-default: #818384;
-  --key-color: #ffffff;
-  --key-cursor: pointer;
-  --key-text-transform: uppercase;
-  --key-wide-min-width: 65px;
-  --key-wide-font-size: 0.75rem;
+  /* Klawiatura */
+  --key-bg: #818384;
+  --key-text: #ffffff;
+  --key-correct: #6aaa64;
+  --key-present: #c9b458;
+  --key-absent: #3a3a3c;
 }
 
-* { box-sizing: border-box; }
-
-html, body {
-  height: 100%;
-  margin: 0;
-  font-family: Inter, Arial, Helvetica, sans-serif;
-  background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
-  color: var(--text);
+/* ===== KAFELEK ===== */
+.tile {
+  width: 58px;                 /* trochę mniejszy niż klasyczny Wordle */
+  height: 58px;
+  border: 2px solid var(--tile-border);
+  border-radius: 8px;          /* zaokrąglone rogi (widać na obrazku) */
+  font-size: 1.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--tile-bg);
+  transition: all 0.15s ease;
 }
 
-body { min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
-
-.topbar { width: 100%; max-width: 760px; display:flex; justify-content:space-between; align-items:center; padding:16px 12px 6px; }
-.left-group, .right-group { display:flex; align-items:center; gap:12px; }
-
-/* GEOMETRIC: remove rounding -> set border-radius:0 */
-.lang-pill { appearance:none; border:1px solid rgba(255,255,255,0.06); background: linear-gradient(180deg, #fff 2%, rgba(255,255,255,0.03) 100%); color: #111; padding:6px 10px; border-radius:0; font-size:0.95rem; }
-.plus-btn, .icon-btn { width:36px; height:36px; border-radius:0; border:1px solid rgba(255,255,255,0.04); background: var(--bg3); color: var(--text); font-size:1.1rem; display:inline-flex; align-items:center; justify-content:center; }
-.plus-btn { font-size:1.6rem; }
-
-.game-shell { width: min(92vw, 760px); display:flex; flex-direction:column; align-items:center; margin-top:6px; position:relative; }
-
-/* BOARD: square cells */
-.board { width: min(58vw, 340px); height: min(58vw, 340px); display:grid; grid-template-columns: repeat(var(--board-columns),1fr); grid-template-rows: repeat(var(--board-rows),1fr); gap: var(--board-gap); margin-top:18px; padding-top:6px; }
-
-/* CELL (formerly .cell) - uses tile variables */
-.cell {
-  width: var(--tile-size);
-  height: var(--tile-size);
-  min-width: 0;
-  min-height: 0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color: var(--tile-color);
-  background: var(--tile-bg);
-  border: var(--tile-border-width) solid var(--tile-border-color);
-  border-radius: var(--tile-radius);
-  font-size: var(--tile-font-size);
-  font-weight: var(--tile-font-weight);
-  text-transform: var(--tile-text-transform);
-  transition: var(--tile-transition);
+/* Stany */
+.tile.filled {
+  border-color: var(--tile-border-filled);
 }
 
-.cell.filled {
-  border-color: var(--tile-border-color-filled);
-  background: var(--tile-bg);
+.tile.correct {
+  background-color: var(--correct);
+  border-color: var(--correct);
 }
 
-.cell.correct { /* zielony – litera na dobrym miejscu */
-  background: var(--color-correct);
-  border-color: var(--color-correct);
-  color: #fff;
+.tile.present {
+  background-color: var(--present);
+  border-color: var(--present);
 }
 
-.cell.present { /* żółty – litera jest, ale w złym miejscu */
-  background: var(--color-present);
-  border-color: var(--color-present);
-  color: #fff;
+.tile.absent {
+  background-color: var(--absent);
+  border-color: var(--absent);
 }
 
-.cell.absent { /* szary – litery nie ma w słowie */
-  background: var(--color-absent);
-  border-color: var(--color-absent);
-  color: #fff;
+/* ===== PLANSZA ===== */
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;                    /* odstęp między rzędami */
 }
 
-/* KEYBOARD: square / geometric keys */
-.keyboard { width: min(93vw, 720px); margin-top:18px; display:flex; flex-direction:column; gap:10px; align-items:center; }
-.key-row { display:flex; justify-content:center; gap:10px; width:100%; }
-.key { min-width:var(--key-min-width); height:var(--key-height); border-radius:var(--key-border-radius); border:1px solid var(--key-border); background: var(--key-bg-default); color: var(--key-color); font-weight:var(--key-font-weight); font-size:var(--key-font-size); text-transform:var(--key-text-transform); display:inline-flex; align-items:center; justify-content:center; }
-.key:active { transform: translateY(1px); }
-.key.wide { min-width:var(--key-wide-min-width); font-size:var(--key-wide-font-size); }
-.key.enter { min-width:100px; background: linear-gradient(180deg,var(--primary),var(--primary-2)); color: #fff; box-shadow: 0 12px 30px rgba(90,76,255,0.12); }
-.key.backspace { min-width:68px; }
-.key.correct { background: var(--green); color:#08120f; }
-.key.present { background: var(--yellow); color:#08120f; }
-.key.absent { background: rgba(255,255,255,0.03); color:#fff; }
+.board-row {
+  display: flex;
+  gap: 6px;                    /* odstęp między kafelkami */
+  justify-content: center;
+}
 
-@media (max-width:640px){ .board { width: min(74vw,320px); height: min(74vw,320px); gap:8px } .cell{font-size:16px} .key{min-width:36px;height:40px} .key.enter{min-width:72px} }
+/* ===== KLAWIATURA ===== */
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 500px;
+  margin: 0 auto;
+}
 
-/* sharper purple glow */
-.game-shell::before{ content:''; position:absolute; width:720px; height:420px; max-width:92vw; top:70px; pointer-events:none; background: radial-gradient(circle at 50% 20%, var(--glow) 0%, transparent 30%); filter: blur(42px); opacity:1; transform:translateY(-18%) scale(1); }
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.key {
+  height: 52px;
+  min-width: 40px;
+  padding: 0 8px;
+  border-radius: 6px;          /* zaokrąglone jak na obrazku */
+  background-color: var(--key-bg);
+  color: var(--key-text);
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Szersze klawisze */
+.key.wide {
+  min-width: 62px;
+  font-size: 0.75rem;
+}
+
+/* Stany klawiszy */
+.key.correct { background-color: var(--key-correct); }
+.key.present { background-color: var(--key-present); }
+.key.absent  { background-color: var(--key-absent); }
