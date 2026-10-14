@@ -18,12 +18,12 @@
 
       <section class="panel status-panel">
         <div>
-          <span class="label">Temat</span>
-          <strong id="theme-name">...</strong>
-        </div>
-        <div>
           <span class="label">Pozostało prób</span>
           <strong id="attempts-left">6</strong>
+        </div>
+        <!-- theme name intentionally hidden to make the theme a secret -->
+        <div class="sr-only">
+          <strong id="theme-name">hidden</strong>
         </div>
       </section>
 
@@ -31,11 +31,9 @@
         <label for="country-input" class="sr-only">Wpisz odpowiedź</label>
         <input
           id="country-input"
-          list="country-options"
           placeholder="Wpisz swoją odpowiedź..."
           autocomplete="off"
         />
-        <datalist id="country-options"></datalist>
         <button type="submit">Zgadnij</button>
       </form>
 

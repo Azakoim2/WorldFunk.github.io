@@ -56,9 +56,9 @@ const countryInput = document.getElementById('country-input');
 const historyEl = document.getElementById('history');
 const messageEl = document.getElementById('message');
 const attemptsLeftEl = document.getElementById('attempts-left');
+// theme name intentionally not shown to the player to create the guessing effect
 const themeNameEl = document.getElementById('theme-name');
 const newGameButton = document.getElementById('new-game');
-const countryOptions = document.getElementById('country-options');
 
 let currentTheme = null;
 let target = null;
@@ -66,9 +66,7 @@ let attempts = [];
 let gameOver = false;
 
 function initDatalist(items) {
-  countryOptions.innerHTML = items
-    .map((it) => `<option value="${typeof it === 'string' ? it : it.name}"></option>`)
-    .join('');
+  // intentionally empty: do NOT populate a visible list of possible answers
 }
 
 function randomFrom(arr) {
@@ -168,10 +166,6 @@ function endGame(won) {
   } else {
     setMessage(`Koniec gry. Poprawna odpowiedź to: ${typeof target === 'string' ? target : target.name}.`, 'error');
   }
-
-  // reveal target
-  // if geo, show name; if word, show word
-  // already written in setMessage
 }
 
 function handleGuess(input) {
@@ -183,14 +177,14 @@ function handleGuess(input) {
     return;
   }
 
-  // find match in current theme
+  // find match in current theme (but the theme is hidden from the player)
   let match = null;
   if (currentTheme.type === 'geo') {
     match = currentTheme.items.find(
       (c) => c.name.toLowerCase() === normalizedInput.toLowerCase()
     );
     if (!match) {
-      setMessage('Takiego kraju nie ma na liście tematów. Spróbuj innego wpisu.', 'error');
+      setMessage('Takiego kraju nie ma w tajnym temacie. Spróbuj innej nazwy.', 'error');
       return;
     }
 
@@ -235,7 +229,7 @@ function handleGuess(input) {
     );
 
     if (!match) {
-      setMessage('Nie ma takiego słowa w bieżącym temacie. Spróbuj ponownie.', 'error');
+      setMessage('Nie ma takiego słowa w tajnym temacie. Spróbuj ponownie.', 'error');
       return;
     }
 
@@ -282,10 +276,12 @@ function resetGame() {
     target = randomFrom(currentTheme.items);
   }
 
-  themeNameEl.textContent = currentTheme.name;
-  initDatalist(currentTheme.items);
+  // intentionally do NOT show currentTheme.name to the player
+  if (themeNameEl) themeNameEl.textContent = 'tajne';
+
+  initDatalist(currentTheme.items); // no-op: we don't reveal choices
   countryInput.value = '';
-  setMessage('Nowa gra. Wpisz odpowiedź i zacznij zgadywać.');
+  setMessage('Nowa gra. Zacznij zgadywać — temat jest ukryty.');
   updateAttemptsLeft();
   renderHistory();
 }
