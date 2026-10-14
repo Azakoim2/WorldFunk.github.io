@@ -1,247 +1,31 @@
-:root {
-  --bg: #edeff3;
-  --panel: #e6ebf0;
-  --board-empty: #f2f4f7;
-  --board-border: rgba(110, 119, 130, 0.8);
-  --key-bg: #dfe5ec;
-  --key-text: #1f2a39;
-  --text: #1a1f2a;
-  --muted: #667085;
-  --green: #6aaa64;
-  --yellow: #c9b458;
-  --gray: #787c7e;
-  --shadow: rgba(18, 22, 28, 0.08);
+/* Visual copy of provided mockup: light background, 6x6 board, rounded light keys */
+:root{
+  --bg: #ffffff;
+  --board-bg: #ffffff;
+  --cell-bg: #fbfdff;
+  --cell-border: #e6eaf0;
+  --key-bg: #eef2f7;
+  --key-border: #e0e6ee;
+  --muted: #9aa4b2;
+  --text: #111827;
+  --shadow: rgba(16,24,40,0.06);
 }
-
-* {
-  box-sizing: border-box;
-}
-
-html, body {
-  margin: 0;
-  min-height: 100%;
-  background: var(--bg);
-  color: var(--text);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-body {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.topbar-wrap {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding-top: 10px;
-}
-
-.topbar {
-  width: min(95vw, 740px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4px 8px;
-}
-
-.lang-block {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.lang-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 52px;
-  height: 36px;
-  border-radius: 10px;
-  background: #f0f3f7;
-  border: 1px solid rgba(50, 62, 75, 0.35);
-  color: var(--text);
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-.plus-btn,
-.tool-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid rgba(32, 38, 46, 0.45);
-  background: rgba(255, 255, 255, 0.15);
-  color: var(--text);
-  font-size: 1.5rem;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.tool-buttons {
-  display: flex;
-  gap: 12px;
-}
-
-.tool-btn {
-  border-radius: 50%;
-  font-size: 1.2rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.game-shell {
-  width: min(95vw, 760px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 6px 0 16px;
-}
-
-.board {
-  margin-top: 18px;
-  width: min(70vw, 420px);
-  aspect-ratio: 1;
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  grid-template-rows: repeat(6, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  border: 2px solid var(--board-border);
-  background: var(--board-empty);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: clamp(1rem, 2vw, 1.5rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  transition: all 0.15s ease;
-}
-
-.cell.filled {
-  background: rgba(255,255,255,0.08);
-}
-
-.cell.correct {
-  background: var(--green);
-  border-color: var(--green);
-  color: white;
-}
-
-.cell.present {
-  background: var(--yellow);
-  border-color: var(--yellow);
-  color: white;
-}
-
-.cell.absent {
-  background: var(--gray);
-  border-color: var(--gray);
-  color: white;
-}
-
-.message-wrap {
-  width: min(92vw, 760px);
-  display: flex;
-  justify-content: center;
-  min-height: 26px;
-  margin-top: 16px;
-}
-
-.message {
-  margin: 0;
-  text-align: center;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.keyboard {
-  margin-top: 18px;
-  width: min(92vw, 620px);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: center;
-}
-
-.keyboard-row {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-}
-
-.key {
-  min-width: 42px;
-  height: 42px;
-  border: none;
-  border-radius: 8px;
-  background: var(--key-bg);
-  color: var(--key-text);
-  font-weight: 700;
-  font-size: 1.05rem;
-  cursor: pointer;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
-  transition: filter 0.12s ease, transform 0.12s ease;
-}
-
-.key:hover {
-  filter: brightness(0.98);
-}
-
-.key:active {
-  transform: translateY(1px);
-}
-
-.key-wide {
-  min-width: 54px;
-}
-
-.key-enter {
-  min-width: 78px;
-}
-
-.key.correct {
-  background: var(--green);
-  color: white;
-}
-
-.key.present {
-  background: var(--yellow);
-  color: white;
-}
-
-.key.absent {
-  background: var(--gray);
-  color: white;
-}
-
-@media (max-width: 540px) {
-  .board {
-    width: min(82vw, 360px);
-    gap: 8px;
-  }
-
-  .key {
-    min-width: 32px;
-    height: 36px;
-    font-size: 0.95rem;
-  }
-
-  .key-wide {
-    min-width: 44px;
-  }
-
-  .key-enter {
-    min-width: 60px;
-  }
-}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter, Arial, Helvetica, sans-serif;background:var(--bg);color:var(--text)}
+.topbar{width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 24px}
+.topbar .left{display:flex;gap:12px;align-items:center}
+.lang-pill{background:#fff;border:1px solid #eef2f7;border-radius:8px;padding:6px 10px;font-weight:700;box-shadow:0 1px 0 var(--shadow);cursor:default}
+.circle-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--key-border);background:var(--key-bg);font-size:20px;cursor:pointer}
+.icon-btn{width:40px;height:40px;border-radius:10px;border:1px solid var(--key-border);background:var(--key-bg);cursor:pointer}
+.container{max-width:760px;margin:0 auto;display:flex;flex-direction:column;align-items:center;padding:20px}
+.board{width:320px;height:420px;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(6,1fr);gap:16px;padding:28px 0 8px}
+/* center board visually like mockup with top spacing */
+.cell{width:56px;height:56px;border-radius:10px;background:var(--cell-bg);border:2px solid var(--cell-border);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:var(--muted);}
+/* make empty look faint */
+.keyboard{width:100%;max-width:720px;margin-top:18px;display:flex;flex-direction:column;gap:12px;align-items:center}
+.row{display:flex;gap:10px}
+.key{min-width:56px;height:52px;border-radius:10px;border:1px solid var(--key-border);background:var(--key-bg);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:#2b3440;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.03)}
+.key.wide{min-width:72px}
+.key.enter{min-width:92px}
+.row.small-row .key.small{min-width:44px;height:44px}
+@media(max-width:560px){.board{width:260px;gap:10px}.cell{width:40px;height:40px;font-size:16px}.key{min-width:40px;height:40px}.key.enter{min-width:64px}}
