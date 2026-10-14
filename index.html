@@ -1,29 +1,30 @@
 <!DOCTYPE html>
 <html lang="pl">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Worldle – WorldFunk</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Worldle Mockup</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="topbar">
-      <div class="left">
-        <button class="lang-pill">PL</button>
-        <button class="circle-btn" aria-label="Nowa gra">+</button>
+      <div class="left-group">
+        <button class="lang-pill" type="button">PL</button>
+        <button class="plus-btn" type="button" aria-label="Nowa gra">+</button>
       </div>
-      <div class="right">
-        <button class="icon-btn" aria-label="Statystyki">▤</button>
-        <button class="icon-btn" aria-label="Ustawienia">⚙</button>
-        <button class="icon-btn" aria-label="Pomoc">?</button>
+
+      <div class="right-group">
+        <button class="icon-btn" type="button" aria-label="Statystyki">▤</button>
+        <button class="icon-btn" type="button" aria-label="Ustawienia">⚙</button>
+        <button class="icon-btn" type="button" aria-label="Pomoc">?</button>
       </div>
     </div>
 
-    <main class="container">
+    <main class="game-shell">
       <div id="board" class="board" aria-label="Plansza gry"></div>
 
       <div class="keyboard" aria-label="Klawiatura">
-        <div class="row">
+        <div class="key-row">
           <button class="key">Q</button>
           <button class="key">W</button>
           <button class="key">E</button>
@@ -35,7 +36,8 @@
           <button class="key">O</button>
           <button class="key">P</button>
         </div>
-        <div class="row">
+
+        <div class="key-row">
           <button class="key">A</button>
           <button class="key">S</button>
           <button class="key">D</button>
@@ -46,8 +48,9 @@
           <button class="key">K</button>
           <button class="key">L</button>
         </div>
-        <div class="row">
-          <button class="key wide">⌫</button>
+
+        <div class="key-row">
+          <button class="key backspace">⌫</button>
           <button class="key">Z</button>
           <button class="key">X</button>
           <button class="key">C</button>
@@ -57,16 +60,17 @@
           <button class="key">M</button>
           <button class="key enter">Enter</button>
         </div>
-        <div class="row small-row">
-          <button class="key small">Ą</button>
-          <button class="key small">Ć</button>
-          <button class="key small">Ę</button>
-          <button class="key small">Ł</button>
-          <button class="key small">Ń</button>
-          <button class="key small">Ó</button>
-          <button class="key small">Ś</button>
-          <button class="key small">Ź</button>
-          <button class="key small">Ż</button>
+
+        <div class="key-row extra-row">
+          <button class="key extra">Ą</button>
+          <button class="key extra">Ć</button>
+          <button class="key extra">Ę</button>
+          <button class="key extra">Ł</button>
+          <button class="key extra">Ń</button>
+          <button class="key extra">Ó</button>
+          <button class="key extra">Ś</button>
+          <button class="key extra">Ź</button>
+          <button class="key extra">Ż</button>
         </div>
       </div>
     </main>
