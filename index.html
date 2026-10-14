@@ -3,46 +3,79 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Worldle - WorldFunk</title>
+    <title>Worldle</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <main class="app">
-      <header class="topbar">
-        <div>
-          <p class="eyebrow">Gra zgadywanka</p>
-          <h1>Worldle</h1>
+    <div class="topbar-wrap">
+      <div class="topbar">
+        <div class="lang-block">
+          <span class="lang-pill">PL</span>
+          <button type="button" class="plus-btn" aria-label="Nowa gra">+</button>
         </div>
-        <button id="new-game" class="secondary" type="button">Nowa gra</button>
-      </header>
 
-      <section class="panel status-panel">
-        <div>
-          <span class="label">Pozostało prób</span>
-          <strong id="attempts-left">6</strong>
+        <div class="tool-buttons" aria-label="Narzędzia">
+          <button type="button" class="tool-btn" aria-label="Statystyki">▤</button>
+          <button type="button" class="tool-btn" aria-label="Ustawienia">⚙</button>
+          <button type="button" class="tool-btn" aria-label="Pomoc">?</button>
         </div>
-        <!-- theme name intentionally hidden to make the theme a secret -->
-        <div class="sr-only">
-          <strong id="theme-name">hidden</strong>
+      </div>
+    </div>
+
+    <main class="game-shell">
+      <div id="board" class="board" aria-label="Plansza gry"></div>
+
+      <div class="message-wrap">
+        <p id="message" class="message" aria-live="polite">Wpisz 6-literowe hasło.</p>
+      </div>
+
+      <div class="keyboard" aria-label="Klawiatura">
+        <div class="keyboard-row">
+          <button class="key" data-key="Q">Q</button>
+          <button class="key" data-key="W">W</button>
+          <button class="key" data-key="E">E</button>
+          <button class="key" data-key="R">R</button>
+          <button class="key" data-key="T">T</button>
+          <button class="key" data-key="Y">Y</button>
+          <button class="key" data-key="U">U</button>
+          <button class="key" data-key="I">I</button>
+          <button class="key" data-key="O">O</button>
+          <button class="key" data-key="P">P</button>
         </div>
-      </section>
-
-      <form id="guess-form" class="guess-form">
-        <label for="country-input" class="sr-only">Wpisz odpowiedź</label>
-        <input
-          id="country-input"
-          placeholder="Wpisz swoją odpowiedź..."
-          autocomplete="off"
-        />
-        <button type="submit">Zgadnij</button>
-      </form>
-
-      <p id="message" class="message" aria-live="polite"></p>
-
-      <section class="panel results-panel">
-        <h2>Twoje próby</h2>
-        <div id="history" class="history" aria-live="polite"></div>
-      </section>
+        <div class="keyboard-row">
+          <button class="key" data-key="A">A</button>
+          <button class="key" data-key="S">S</button>
+          <button class="key" data-key="D">D</button>
+          <button class="key" data-key="F">F</button>
+          <button class="key" data-key="G">G</button>
+          <button class="key" data-key="H">H</button>
+          <button class="key" data-key="J">J</button>
+          <button class="key" data-key="K">K</button>
+          <button class="key" data-key="L">L</button>
+        </div>
+        <div class="keyboard-row">
+          <button class="key key-wide" data-key="BACKSPACE">⌫</button>
+          <button class="key" data-key="Z">Z</button>
+          <button class="key" data-key="X">X</button>
+          <button class="key" data-key="C">C</button>
+          <button class="key" data-key="V">V</button>
+          <button class="key" data-key="B">B</button>
+          <button class="key" data-key="N">N</button>
+          <button class="key" data-key="M">M</button>
+          <button class="key key-enter" data-key="ENTER">Enter</button>
+        </div>
+        <div class="keyboard-row keyboard-row-extra">
+          <button class="key" data-key="Ą">Ą</button>
+          <button class="key" data-key="Ć">Ć</button>
+          <button class="key" data-key="Ę">Ę</button>
+          <button class="key" data-key="Ł">Ł</button>
+          <button class="key" data-key="Ń">Ń</button>
+          <button class="key" data-key="Ó">Ó</button>
+          <button class="key" data-key="Ś">Ś</button>
+          <button class="key" data-key="Ź">Ź</button>
+          <button class="key" data-key="Ż">Ż</button>
+        </div>
+      </div>
     </main>
 
     <script src="script.js"></script>
