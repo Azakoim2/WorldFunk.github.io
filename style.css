@@ -1,112 +1,240 @@
 :root {
-  /* Tło */
-  --bg-color: #121213;
-  --tile-bg: transparent;
+  --bg: #121213;
+  --bg2: #13141c;
+  --panel: #121823;
   --tile-border: #3a3a3c;
   --tile-border-filled: #565758;
-
-  /* Kolory stanów */
-  --correct: #6aaa64;      /* zielony */
-  --present: #c9b458;      /* żółty */
-  --absent: #3a3a3c;       /* ciemny szary */
-
-  /* Klawiatura */
+  --tile-bg: transparent;
+  --correct: #6aaa64;
+  --present: #c9b458;
+  --absent: #3a3a3c;
   --key-bg: #818384;
   --key-text: #ffffff;
-  --key-correct: #6aaa64;
-  --key-present: #c9b458;
-  --key-absent: #3a3a3c;
+  --primary: #6a5dff;
+  --primary-2: #5a4bff;
+  --tool-bg: #1f232b;
+  --line: rgba(255,255,255,0.08);
 }
 
-/* ===== KAFELEK ===== */
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
+  color: #edf2ff;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.topbar {
+  width: min(100%, 760px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px 8px;
+}
+
+.left-group,
+.right-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lang-pill,
+.plus-btn,
+.icon-btn {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.lang-pill {
+  width: 44px;
+  height: 36px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.08) 100%);
+  color: #101112;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0;
+}
+
+.plus-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 1.05rem;
+}
+
+.lang-pill:hover,
+.plus-btn:hover,
+.icon-btn:hover,
+.key:hover{
+  transform: translateY(-1px);
+}
+
+.game-shell {
+  width: min(92vw, 760px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+  position: relative;
+}
+
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 18px;
+  align-items: center;
+}
+
+.board-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
 .tile {
-  width: 58px;                 /* trochę mniejszy niż klasyczny Wordle */
+  width: 58px;
   height: 58px;
   border: 2px solid var(--tile-border);
-  border-radius: 8px;          /* zaokrąglone rogi (widać na obrazku) */
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 1.9rem;
   font-weight: 700;
   text-transform: uppercase;
   color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: var(--tile-bg);
-  transition: all 0.15s ease;
+  background: var(--tile-bg);
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
 }
 
-/* Stany */
 .tile.filled {
   border-color: var(--tile-border-filled);
 }
 
 .tile.correct {
-  background-color: var(--correct);
+  background: var(--correct);
   border-color: var(--correct);
 }
 
 .tile.present {
-  background-color: var(--present);
+  background: var(--present);
   border-color: var(--present);
 }
 
 .tile.absent {
-  background-color: var(--absent);
+  background: var(--absent);
   border-color: var(--absent);
 }
 
-/* ===== PLANSZA ===== */
-.board {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;                    /* odstęp między rzędami */
+.tile.revealing {
+  transform: scaleY(0.96);
 }
 
-.board-row {
-  display: flex;
-  gap: 6px;                    /* odstęp między kafelkami */
-  justify-content: center;
-}
-
-/* ===== KLAWIATURA ===== */
 .keyboard {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-width: 500px;
-  margin: 0 auto;
+  width: min(92vw, 720px);
+  max-width: 720px;
+  margin-top: 26px;
+  align-items: center;
 }
 
 .keyboard-row {
   display: flex;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
+  width: 100%;
 }
 
 .key {
   height: 52px;
-  min-width: 40px;
-  padding: 0 8px;
-  border-radius: 6px;          /* zaokrąglone jak na obrazku */
+  min-width: 42px;
+  padding: 0 10px;
+  border-radius: 8px;
   background-color: var(--key-bg);
   color: var(--key-text);
-  font-weight: 700;
-  font-size: 0.9rem;
   border: none;
   cursor: pointer;
+  font-weight: 700;
+  font-size: 0.9rem;
   text-transform: uppercase;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: filter 0.15s ease, transform 0.15s ease, background 0.15s ease;
 }
 
-/* Szersze klawisze */
-.key.wide {
+.key.backspace {
   min-width: 62px;
-  font-size: 0.75rem;
 }
 
-/* Stany klawiszy */
-.key.correct { background-color: var(--key-correct); }
-.key.present { background-color: var(--key-present); }
-.key.absent  { background-color: var(--key-absent); }
+.key.enter {
+  min-width: 86px;
+  background: linear-gradient(180deg, var(--primary), var(--primary-2));
+  color: #fff;
+}
+
+.key.correct {
+  background-color: var(--correct);
+}
+
+.key.present {
+  background-color: var(--present);
+}
+
+.key.absent {
+  background-color: var(--absent);
+}
+
+@media (max-width: 640px) {
+  .tile {
+    width: 46px;
+    height: 46px;
+    font-size: 1.5rem;
+  }
+
+  .board { gap: 6px; }
+  .board-row { gap: 6px; }
+
+  .keyboard { gap: 6px; }
+  .keyboard-row { gap: 6px; }
+
+  .key {
+    min-width: 30px;
+    height: 44px;
+    font-size: 0.8rem;
+    padding: 0 8px;
+  }
+
+  .key.backspace { min-width: 48px; }
+  .key.enter { min-width: 68px; }
+}
