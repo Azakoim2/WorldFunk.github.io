@@ -122,55 +122,24 @@
   <div class="message" id="message"></div>
 
   <script>
-    // === LISTA HASEŁ (ładne, popularne słowa) ===
-    const SECRET_WORDS = [
-      "borsuk","delfin","gepard","jaguar","kangur","krolik","papuga","tygrys",
-      "daniel","piesek","szczur","fretka","chomik","lisica","alpaka","bazant",
-      "bielik","bocian","czapla","kaczka","swinia","jablko","morela","wisnia",
-      "malina","ogorek","cebula","sernik","ciasto","jogurt","salata","boczek",
-      "brokul","fasola","kompot","lukier","orzech","pieprz","pierog","pstrag",
-      "bramka","boisko","trener","sedzia","plywak","kolarz","bokser","siatka",
-      "koszyk","puchar","zespol","atleta","ciezar","finisz","hantle","podium",
-      "serwis","sprint","tyczka","wioslo","wyscig","zawody","krakow","gdansk",
-      "poznan","lublin","kielce","szkola","laguna","marina","oltarz","ratusz",
-      "stacja","lekarz","kelner","rolnik","malarz","pisarz","gitara","trabka",
-      "barman","geolog","murarz","kurtka","sweter","czapka","szalik","plecak",
-      "chusta","szorty","tunika","zakiet","pociag","statek","skuter","czarny",
-      "granat","lekcja","zeszyt","olowek","globus","fizyka","chemia","dyplom",
-      "wyklad","laptop","tablet","strona","myszka","kamera","router","serwer",
-      "antena","sensor","podroz","namiot","hostel","safari","wyjazd","taniec",
-      "bilard","domino","puzzle","sudoku","szachy"
+    const WORDS = [
+      "borsuk","delfin","gepard","jaguar","kangur","krolik","papuga","szakale",
+      "tygrys","daniel","piesek","szczur","fretka","chomik","lisica","alpaka",
+      "bazant","bielik","bocian","czapla","kaczka","swinia","jablko","morela",
+      "wisnia","malina","ogorek","cebula","sernik","ciasto","jogurt","salata",
+      "boczek","brokul","fasola","kompot","lukier","orzech","pieprz","pierog",
+      "pstrag","bramka","boisko","trener","sedzia","plywak","kolarz","bokser",
+      "siatka","koszyk","puchar","zespol","atleta","ciezar","finisz","hantle",
+      "oscien","podium","serwis","sprint","tyczka","wioslo","wyscig","zawody",
+      "krakow","gdansk","poznan","lublin","kielce","szkola","laguna","marina",
+      "oltarz","ratusz","stacja","lekarz","kelner","rolnik","malarz","pisarz",
+      "gitara","trabka","barman","geolog","murarz","kurtka","sweter","czapka",
+      "szalik","plecak","chusta","szorty","tunika","zakiet","pociag","statek",
+      "skuter","czarny","granat","lekcja","zeszyt","olowek","globus","fizyka",
+      "chemia","dyplom","wyklad","laptop","tablet","strona","myszka","kamera",
+      "router","serwer","antena","sensor","podroz","namiot","hostel","safari",
+      "wyjazd","taniec","bilard","domino","puzzle","sudoku","szachy"
     ];
-
-    // === DUŻA LISTA DOZWOLONYCH ZGADYWAŃ (prawdziwe 6-literowe słowa) ===
-    // Tutaj możesz dokładać kolejne prawdziwe słowa
-    const VALID_WORDS = new Set([
-      ...SECRET_WORDS,
-      // dodatkowe popularne 6-literowe słowa
-      "abonent","absencja","absolut","abstrak","absurd","abyssal","acyklia",
-      "adapter","adresat","adwokat","aerobik","afektat","afera","agentka",
-      "agresja","akcent","akcept","akordy","aktorzy","aktual","akustyk",
-      "alarmy","albumy","alergia","alfabet","algebra","alkohol","allegro",
-      "almanac","alpaki","altana","aluzja","amator","amfora","amonia",
-      "analiza","ananas","anatom","anegdota","angina","animacja","ankieta",
-      "anomal","antena","antylopa","aparat","apetyt","aplauz","aposto",
-      "apteka","arabes","arbuz","archeolog","archiw","arena","areszt",
-      "argument","arkada","armata","aromat","arteria","artysta","asfalt",
-      "aspekt","aster","astma","asystent","atakuj","atelier","atmosfera",
-      "atrament","aukcja","autobi","autobus","automat","awans","awaria",
-      "babcia","baczyk","badacz","badanie","bagaznik","bajka","bajtla",
-      "bakalie","balans","balcony","balet","balkon","balon","bambus",
-      "banan","bandaz","banita","bankiet","baran","barman","basen",
-      "batalia","bateria","bawełna","bazalt","bazylia","beczka","bęben",
-      "benzyna","beret","bestia","beton","bezpie","biblioteka","biceps",
-      "bilet","binarny","biolog","biurko","biznes","blacha","blask",
-      "blekit","blizna","blokada","blondyn","bluzka","boczek","boczny",
-      "bogaty","boisko","bokser","bolesny","bomba","bonus","borowik",
-      "botanik","bramka","bratni","brelok","bronia","broszka","brudny",
-      "brzeg","buchta","budowa","budynek","bufet","bukiet","bulion",
-      "buntownik","burza","butelka","byczyna","bytosc"
-      // ... możesz dokładać dalej
-    ].map(w => w.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")));
 
     function normalize(str) {
       return str.toLowerCase()
@@ -179,7 +148,10 @@
         .replace(/ś/g,"s").replace(/ź/g,"z").replace(/ż/g,"z");
     }
 
-    const secret = SECRET_WORDS[Math.floor(Math.random() * SECRET_WORDS.length)];
+    // Tworzymy znormalizowaną listę do szybkiego sprawdzania
+    const VALID_WORDS = new Set(WORDS.map(w => normalize(w)));
+
+    const secret = WORDS[Math.floor(Math.random() * WORDS.length)];
     const secretNorm = normalize(secret);
 
     let currentRow = 0;
@@ -187,7 +159,7 @@
     let gameOver = false;
     let board = Array(6).fill().map(() => Array(6).fill(""));
 
-    // Plansza
+    // Tworzenie planszy
     const boardEl = document.getElementById("board");
     for (let r = 0; r < 6; r++) {
       const row = document.createElement("div");
@@ -229,9 +201,14 @@
 
     function handleKey(key) {
       if (gameOver) return;
-      if (key === "Enter") submitGuess();
-      else if (key === "←") deleteLetter();
-      else if (currentTile < 6) addLetter(key);
+
+      if (key === "Enter") {
+        submitGuess();
+      } else if (key === "←") {
+        deleteLetter();
+      } else if (currentTile < 6) {
+        addLetter(key);
+      }
     }
 
     function addLetter(letter) {
@@ -261,10 +238,10 @@
       const guess = board[currentRow].join("");
       const guessNorm = normalize(guess);
 
-      // Sprawdzenie czy słowo jest dozwolone
+      // === SPRAWDZENIE CZY SŁOWO ISTNIEJE ===
       if (!VALID_WORDS.has(guessNorm)) {
         showMessage("Słowo nie istnieje w słowniku!");
-        return;
+        return; // nie przechodzimy dalej – gracz musi usunąć litery
       }
 
       // Kolorowanie
@@ -272,6 +249,7 @@
       const result = Array(6).fill("absent");
       const used = Array(6).fill(false);
 
+      // Zielone
       for (let i = 0; i < 6; i++) {
         if (guessNorm[i] === secretArr[i]) {
           result[i] = "correct";
@@ -279,6 +257,7 @@
         }
       }
 
+      // Żółte
       for (let i = 0; i < 6; i++) {
         if (result[i] === "correct") continue;
         for (let j = 0; j < 6; j++) {
@@ -290,6 +269,7 @@
         }
       }
 
+      // Aplikuj kolory
       for (let i = 0; i < 6; i++) {
         const tile = document.getElementById(`tile-${currentRow}-${i}`);
         tile.classList.add(result[i]);
@@ -300,4 +280,46 @@
           if (result[i] === "correct") {
             key.classList.remove("present", "absent");
             key.classList.add("correct");
-          } else if (result[i] 
+          } else if (result[i] === "present" && !key.classList.contains("correct")) {
+            key.classList.remove("absent");
+            key.classList.add("present");
+          } else if (!key.classList.contains("correct") && !key.classList.contains("present")) {
+            key.classList.add("absent");
+          }
+        }
+      }
+
+      if (guessNorm === secretNorm) {
+        showMessage("Gratulacje! 🎉");
+        gameOver = true;
+        return;
+      }
+
+      currentRow++;
+      currentTile = 0;
+
+      if (currentRow >= 6) {
+        showMessage(`Przegrana! Hasło: ${secret.toUpperCase()}`);
+        gameOver = true;
+      }
+    }
+
+    function showMessage(text) {
+      const msg = document.getElementById("message");
+      msg.textContent = text;
+      setTimeout(() => {
+        if (!gameOver) msg.textContent = "";
+      }, 2200);
+    }
+
+    // Klawiatura fizyczna
+    document.addEventListener("keydown", (e) => {
+      if (gameOver) return;
+      const key = e.key.toLowerCase();
+      if (key === "enter") handleKey("Enter");
+      else if (key === "backspace") handleKey("←");
+      else if (/^[a-ząćęłńóśźż]$/.test(key)) handleKey(key);
+    });
+  </script>
+</body>
+</html>
