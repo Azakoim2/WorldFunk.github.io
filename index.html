@@ -119,27 +119,20 @@
 
   <div class="board" id="board"></div>
   <div class="keyboard" id="keyboard"></div>
-  <div class="message" id="message"></div>
+  <div class="message" id="message">Ładowanie słownika...</div>
 
   <script>
-    const WORDS = [
-      "borsuk","delfin","gepard","jaguar","kangur","krolik","papuga","szakale",
-      "tygrys","daniel","piesek","szczur","fretka","chomik","lisica","alpaka",
-      "bazant","bielik","bocian","czapla","kaczka","swinia","jablko","morela",
-      "wisnia","malina","ogorek","cebula","sernik","ciasto","jogurt","salata",
-      "boczek","brokul","fasola","kompot","lukier","orzech","pieprz","pierog",
-      "pstrag","bramka","boisko","trener","sedzia","plywak","kolarz","bokser",
-      "siatka","koszyk","puchar","zespol","atleta","ciezar","finisz","hantle",
-      "oscien","podium","serwis","sprint","tyczka","wioslo","wyscig","zawody",
-      "krakow","gdansk","poznan","lublin","kielce","szkola","laguna","marina",
-      "oltarz","ratusz","stacja","lekarz","kelner","rolnik","malarz","pisarz",
-      "gitara","trabka","barman","geolog","murarz","kurtka","sweter","czapka",
-      "szalik","plecak","chusta","szorty","tunika","zakiet","pociag","statek",
-      "skuter","czarny","granat","lekcja","zeszyt","olowek","globus","fizyka",
-      "chemia","dyplom","wyklad","laptop","tablet","strona","myszka","kamera",
-      "router","serwer","antena","sensor","podroz","namiot","hostel","safari",
-      "wyjazd","taniec","bilard","domino","puzzle","sudoku","szachy"
-    ];
+    let WORDS = [];
+    let VALID_WORDS = new Set();
+    let secret = "";
+    let secretNorm = "";
+
+    let currentRow = 0;
+    let currentTile = 0;
+    let gameOver = true; // Blokujemy grę do momentu załadowania słownika
+    let board = Array(6).fill().map(() => Array(6).fill(""));
+
+    const keyElements = {};
 
     function normalize(str) {
       return str.toLowerCase()
@@ -148,16 +141,34 @@
         .replace(/ś/g,"s").replace(/ź/g,"z").replace(/ż/g,"z");
     }
 
-    // Tworzymy znormalizowaną listę do szybkiego sprawdzania
-    const VALID_WORDS = new Set(WORDS.map(w => normalize(w)));
+    // Inicjalizacja gry po pobraniu bazy JSON
+    async function initGame() {
+      try {
+        const response = await fetch('words.json');
+        if (!response.ok) throw new Error("Nie udało się pobrać pliku ze słowami.");
+        
+        WORDS = await response.json();
+        
+        if (!WORDS || WORDS.length === 0) {
+          throw new Error("Słownik jest pusty!");
+        }
 
-    const secret = WORDS[Math.floor(Math.random() * WORDS.length)];
-    const secretNorm = normalize(secret);
+        // Tworzymy znormalizowany Set do błyskawicznego sprawdzania wpisanych słów
+        VALID_WORDS = new Set(WORDS.map(w => normalize(w)));
 
-    let currentRow = 0;
-    let currentTile = 0;
-    let gameOver = false;
-    let board = Array(6).fill().map(() => Array(6).fill(""));
+        // Losujemy sekretne słowo
+        secret = WORDS[Math.floor(Math.random() * WORDS.length)];
+        secretNorm = normalize(secret);
+
+        // Czyszczenie komunikatu o ładowaniu
+        document.getElementById("message").textContent = "";
+        gameOver = false; // Odblokowujemy grę
+
+      } catch (error) {
+        console.error(error);
+        document.getElementById("message").textContent = "Błąd ładowania słownika!";
+      }
+    }
 
     // Tworzenie planszy
     const boardEl = document.getElementById("board");
@@ -182,8 +193,6 @@
     ];
 
     const keyboardEl = document.getElementById("keyboard");
-    const keyElements = {};
-
     keyboardLayout.forEach(rowKeys => {
       const row = document.createElement("div");
       row.className = "keyboard-row";
@@ -238,13 +247,11 @@
       const guess = board[currentRow].join("");
       const guessNorm = normalize(guess);
 
-      // === SPRAWDZENIE CZY SŁOWO ISTNIEJE ===
       if (!VALID_WORDS.has(guessNorm)) {
         showMessage("Słowo nie istnieje w słowniku!");
-        return; // nie przechodzimy dalej – gracz musi usunąć litery
+        return;
       }
 
-      // Kolorowanie
       const secretArr = secretNorm.split("");
       const result = Array(6).fill("absent");
       const used = Array(6).fill(false);
@@ -308,11 +315,10 @@
       const msg = document.getElementById("message");
       msg.textContent = text;
       setTimeout(() => {
-        if (!gameOver) msg.textContent = "";
+        if (!gameOver && msg.textContent === text) msg.textContent = "";
       }, 2200);
     }
 
-    // Klawiatura fizyczna
     document.addEventListener("keydown", (e) => {
       if (gameOver) return;
       const key = e.key.toLowerCase();
@@ -320,6 +326,9 @@
       else if (key === "backspace") handleKey("←");
       else if (/^[a-ząćęłńóśźż]$/.test(key)) handleKey(key);
     });
+
+    // Uruchomienie pobierania słownika po załadowaniu strony
+    initGame();
   </script>
 </body>
 </html>
