@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Worldle</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Geo Guessing Game</p>
+          <h1>Worldle</h1>
+        </div>
+        <button id="new-game" class="secondary" type="button">Nowa gra</button>
+      </header>
+
+      <section class="panel status-panel">
+        <div>
+          <span class="label">Pozostało prób</span>
+          <strong id="attempts-left">6</strong>
+        </div>
+        <div>
+          <span class="label">Cel</span>
+          <strong id="target-name">?</strong>
+        </div>
+      </section>
+
+      <form id="guess-form" class="guess-form">
+        <label for="country-input" class="sr-only">Wpisz nazwę kraju</label>
+        <input
+          id="country-input"
+          list="country-options"
+          placeholder="Wpisz nazwę kraju..."
+          autocomplete="off"
+        />
+        <datalist id="country-options"></datalist>
+        <button type="submit">Zgadnij</button>
+      </form>
+
+      <p id="message" class="message" aria-live="polite"></p>
+
+      <section class="panel results-panel">
+        <h2>Twoje próby</h2>
+        <div id="history" class="history" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
