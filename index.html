@@ -247,58 +247,42 @@
       const guess = board[currentRow].join("");
       const guessNorm = normalize(guess);
 
-      // Sprawdzamy w znormalizowanej bazie
       if (!VALID_WORDS.has(guessNorm)) {
         showMessage("Słowo nie istnieje w słowniku!");
         return;
       }
 
-      // Porównujemy znormalizowane słowo gracza ze znormalizowanym hasłem
       const secretArr = secretNorm.split("");
-      const guessArr = guessNorm.split("");
       const result = Array(6).fill("absent");
-      const usedSecret = Array(6).fill(false);
+      const used = Array(6).fill(false);
 
-      // 1. Zielone (dokładne trafienie na tej samej pozycji)
+      // Zielone
       for (let i = 0; i < 6; i++) {
-        if (guessArr[i] === secretArr[i]) {
+        if (guessNorm[i] === secretArr[i]) {
           result[i] = "correct";
-          usedSecret[i] = true;
-          guessArr[i] = null;
+          used[i] = true;
         }
       }
 
-      // 2. Żółte (litera jest w haśle, ale w innym miejscu)
+      // Żółte
       for (let i = 0; i < 6; i++) {
         if (result[i] === "correct") continue;
-        
-        const letter = guessArr[i];
-        if (letter === null) continue;
-
-        let foundMatch = false;
         for (let j = 0; j < 6; j++) {
-          if (!usedSecret[j] && secretArr[j] === letter) {
-            foundMatch = true;
-            usedSecret[j] = true;
+          if (!used[j] && guessNorm[i] === secretArr[j]) {
+            result[i] = "present";
+            used[j] = true;
             break;
           }
         }
-
-        if (foundMatch) {
-          result[i] = "present";
-        }
       }
 
-      // 3. Aplikowanie kolorów do kafelków i klawiatury
+      // Aplikuj kolory
       for (let i = 0; i < 6; i++) {
         const tile = document.getElementById(`tile-${currentRow}-${i}`);
         tile.classList.add(result[i]);
 
-        // Pobieramy oryginalnie wpisaną literę (z polskim znakiem, np. 'ń')
-        const originalLetter = board[currentRow][i].toLowerCase();
-        // Szukamy odpowiedniego klawisza na klawiaturze
-        const key = keyElements[originalLetter] || keyElements[normalize(originalLetter)];
-        
+        const letter = board[currentRow][i];
+        const key = keyElements[letter] || keyElements[letter.toLowerCase()];
         if (key) {
           if (result[i] === "correct") {
             key.classList.remove("present", "absent");
@@ -326,5 +310,25 @@
         gameOver = true;
       }
     }
+
+    function showMessage(text) {
+      const msg = document.getElementById("message");
+      msg.textContent = text;
+      setTimeout(() => {
+        if (!gameOver && msg.textContent === text) msg.textContent = "";
+      }, 2200);
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (gameOver) return;
+      const key = e.key.toLowerCase();
+      if (key === "enter") handleKey("Enter");
+      else if (key === "backspace") handleKey("←");
+      else if (/^[a-ząćęłńóśźż]$/.test(key)) handleKey(key);
+    });
+
+    // Uruchomienie pobierania słownika po załadowaniu strony
+    initGame();
+  </script>
 </body>
 </html>
