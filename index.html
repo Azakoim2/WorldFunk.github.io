@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Word Funk – 6 liter</title>
+  <title>Word Funk – 5 liter</title>
   <style>
     :root {
       --bg: #121213;
@@ -114,7 +114,7 @@
       font-weight: bold;
     }
 
-    /* Styl okienka modalnego (popupu) */
+    /* Styl okienka modalnego */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -217,7 +217,7 @@
     let currentRow = 0;
     let currentTile = 0;
     let gameOver = true;
-    let board = Array(6).fill().map(() => Array(6).fill(""));
+    let board = Array(6).fill().map(() => Array(5).fill("")); // 6 wierszy, 5 kolumn
 
     const keyElements = {};
 
@@ -233,15 +233,18 @@
         const response = await fetch('words.json');
         if (!response.ok) throw new Error("Nie udało się pobrać pliku ze słowami.");
         
-        WORDS = await response.json();
-        if (!WORDS || WORDS.length === 0) throw new Error("Słownik jest pusty!");
+        const rawWords = await response.json();
+        // Filtrujemy tylko słowa o długości dokładnie 5 liter
+        WORDS = rawWords.filter(w => w.trim().length === 5);
+        
+        if (!WORDS || WORDS.length === 0) throw new Error("Brak 5-literowych słów w słowniku!");
 
         VALID_WORDS = new Set(WORDS.map(w => normalize(w)));
         resetGame();
 
       } catch (error) {
         console.error(error);
-        document.getElementById("message").textContent = "Błąd ładowania słownika!";
+        document.getElementById("message").textContent = "Błąd ładowania słownika (wymagane słowa 5-literowe)!";
       }
     }
 
@@ -254,13 +257,13 @@
       currentRow = 0;
       currentTile = 0;
       gameOver = false;
-      board = Array(6).fill().map(() => Array(6).fill(""));
+      board = Array(6).fill().map(() => Array(5).fill(""));
 
       document.getElementById("message").textContent = "";
       document.getElementById("modalOverlay").style.display = "none";
 
       for (let r = 0; r < 6; r++) {
-        for (let c = 0; c < 6; c++) {
+        for (let c = 0; c < 5; c++) {
           const tile = document.getElementById(`tile-${r}-${c}`);
           tile.textContent = "";
           tile.className = "tile";
@@ -273,11 +276,12 @@
       });
     }
 
+    // Tworzenie planszy 6x5
     const boardEl = document.getElementById("board");
     for (let r = 0; r < 6; r++) {
       const row = document.createElement("div");
       row.className = "row";
-      for (let c = 0; c < 6; c++) {
+      for (let c = 0; c < 5; c++) {
         const tile = document.createElement("div");
         tile.className = "tile";
         tile.id = `tile-${r}-${c}`;
@@ -286,6 +290,7 @@
       boardEl.appendChild(row);
     }
 
+    // Klawiatura
     const keyboardLayout = [
       ["q","w","e","r","t","y","u","i","o","p"],
       ["a","s","d","f","g","h","j","k","l"],
@@ -311,7 +316,6 @@
 
     function handleKey(key) {
       if (gameOver) {
-        // Jeśli gra się skończyła, Enter resetuje grę
         if (key === "Enter") resetGame();
         return;
       }
@@ -320,13 +324,13 @@
         submitGuess();
       } else if (key === "←") {
         deleteLetter();
-      } else if (currentTile < 6) {
+      } else if (currentTile < 5) {
         addLetter(key);
       }
     }
 
     function addLetter(letter) {
-      if (currentTile >= 6) return;
+      if (currentTile >= 5) return;
       board[currentRow][currentTile] = letter;
       const tile = document.getElementById(`tile-${currentRow}-${currentTile}`);
       tile.textContent = letter;
@@ -344,7 +348,7 @@
     }
 
     function submitGuess() {
-      if (currentTile < 6) {
+      if (currentTile < 5) {
         showMessage("Za mało liter!");
         return;
       }
@@ -359,10 +363,10 @@
 
       const secretArr = secretNorm.split("");
       const guessArr = guessNorm.split("");
-      const result = Array(6).fill("absent");
-      const usedSecret = Array(6).fill(false);
+      const result = Array(5).fill("absent");
+      const usedSecret = Array(5).fill(false);
 
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 5; i++) {
         if (guessArr[i] === secretArr[i]) {
           result[i] = "correct";
           usedSecret[i] = true;
@@ -370,13 +374,13 @@
         }
       }
 
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 5; i++) {
         if (result[i] === "correct") continue;
         const letter = guessArr[i];
         if (letter === null) continue;
 
         let foundMatch = false;
-        for (let j = 0; j < 6; j++) {
+        for (let j = 0; j < 5; j++) {
           if (!usedSecret[j] && secretArr[j] === letter) {
             foundMatch = true;
             usedSecret[j] = true;
@@ -388,7 +392,7 @@
         }
       }
 
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 5; i++) {
         const tile = document.getElementById(`tile-${currentRow}-${i}`);
         tile.classList.add(result[i]);
 
