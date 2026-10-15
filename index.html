@@ -114,12 +114,61 @@
       font-weight: bold;
     }
 
-    .restart-btn {
+    /* Styl okienka modalnego (popupu) */
+    .modal-overlay {
       display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.75);
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .modal-content {
+      background-color: #1f1f23;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 340px;
+      width: 90%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      border: 1px solid #3a3a3c;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: white;
+    }
+
+    .modal-subtitle {
+      font-size: 0.95rem;
+      color: #b0b0b0;
+      margin-bottom: 12px;
+    }
+
+    .secret-word-box {
+      display: inline-block;
+      background: #121213;
+      border: 2px dashed #565758;
+      padding: 10px 20px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      border-radius: 8px;
+      color: white;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+
+    .restart-btn {
       background-color: var(--correct);
       color: white;
       border: none;
-      padding: 12px 24px;
+      width: 100%;
+      padding: 12px;
       font-size: 1rem;
       font-weight: bold;
       border-radius: 8px;
@@ -132,6 +181,12 @@
     .restart-btn:hover {
       background-color: #538d4e;
     }
+
+    .modal-hint {
+      font-size: 0.8rem;
+      color: #818384;
+      margin-top: 12px;
+    }
   </style>
 </head>
 <body>
@@ -141,7 +196,17 @@
   <div class="board" id="board"></div>
   <div class="keyboard" id="keyboard"></div>
   <div class="message" id="message">Ładowanie słownika...</div>
-  <button class="restart-btn" id="restartBtn" onclick="resetGame()">Graj ponownie</button>
+
+  <!-- Okienko modalne -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content">
+      <div class="modal-title" id="modalTitle">Przegrałeś!</div>
+      <div class="modal-subtitle">Odpowiedź brzmiała:</div>
+      <div class="secret-word-box" id="modalSecretWord">ZAIKS</div>
+      <button class="restart-btn" onclick="resetGame()">Jeszcze raz</button>
+      <div class="modal-hint">lub naciśnij Enter, aby zagrać ponownie</div>
+    </div>
+  </div>
 
   <script>
     let WORDS = [];
@@ -151,7 +216,7 @@
 
     let currentRow = 0;
     let currentTile = 0;
-    let gameOver = true; // Blokujemy grę do momentu załadowania słownika
+    let gameOver = true;
     let board = Array(6).fill().map(() => Array(6).fill(""));
 
     const keyElements = {};
@@ -163,22 +228,15 @@
         .replace(/ś/g,"s").replace(/ź/g,"z").replace(/ż/g,"z");
     }
 
-    // Inicjalizacja gry po pobraniu bazy JSON
     async function initGame() {
       try {
         const response = await fetch('words.json');
         if (!response.ok) throw new Error("Nie udało się pobrać pliku ze słowami.");
         
         WORDS = await response.json();
-        
-        if (!WORDS || WORDS.length === 0) {
-          throw new Error("Słownik jest pusty!");
-        }
+        if (!WORDS || WORDS.length === 0) throw new Error("Słownik jest pusty!");
 
-        // Tworzymy znormalizowany Set do błyskawicznego sprawdzania wpisanych słów
         VALID_WORDS = new Set(WORDS.map(w => normalize(w)));
-
-        // Uruchamiamy pierwszą rundę
         resetGame();
 
       } catch (error) {
@@ -187,11 +245,9 @@
       }
     }
 
-    // Funkcja resetująca / rozpoczynająca nową grę
     function resetGame() {
       if (WORDS.length === 0) return;
 
-      // Losujemy sekretne słowo
       secret = WORDS[Math.floor(Math.random() * WORDS.length)];
       secretNorm = normalize(secret);
 
@@ -200,11 +256,9 @@
       gameOver = false;
       board = Array(6).fill().map(() => Array(6).fill(""));
 
-      // Czyszczenie komunikatów i ukrycie przycisku
       document.getElementById("message").textContent = "";
-      document.getElementById("restartBtn").style.display = "none";
+      document.getElementById("modalOverlay").style.display = "none";
 
-      // Czyszczenie planszy kafelków
       for (let r = 0; r < 6; r++) {
         for (let c = 0; c < 6; c++) {
           const tile = document.getElementById(`tile-${r}-${c}`);
@@ -213,14 +267,12 @@
         }
       }
 
-      // Reset kolorów klawiatury
       Object.values(keyElements).forEach(key => {
         const k = key.dataset.key;
         key.className = "key" + (k === "Enter" || k === "←" ? " wide" : "");
       });
     }
 
-    // Tworzenie planszy
     const boardEl = document.getElementById("board");
     for (let r = 0; r < 6; r++) {
       const row = document.createElement("div");
@@ -234,7 +286,6 @@
       boardEl.appendChild(row);
     }
 
-    // Klawiatura
     const keyboardLayout = [
       ["q","w","e","r","t","y","u","i","o","p"],
       ["a","s","d","f","g","h","j","k","l"],
@@ -259,7 +310,11 @@
     });
 
     function handleKey(key) {
-      if (gameOver) return;
+      if (gameOver) {
+        // Jeśli gra się skończyła, Enter resetuje grę
+        if (key === "Enter") resetGame();
+        return;
+      }
 
       if (key === "Enter") {
         submitGuess();
@@ -303,36 +358,42 @@
       }
 
       const secretArr = secretNorm.split("");
+      const guessArr = guessNorm.split("");
       const result = Array(6).fill("absent");
-      const used = Array(6).fill(false);
+      const usedSecret = Array(6).fill(false);
 
-      // Zielone
       for (let i = 0; i < 6; i++) {
-        if (guessNorm[i] === secretArr[i]) {
+        if (guessArr[i] === secretArr[i]) {
           result[i] = "correct";
-          used[i] = true;
+          usedSecret[i] = true;
+          guessArr[i] = null;
         }
       }
 
-      // Żółte
       for (let i = 0; i < 6; i++) {
         if (result[i] === "correct") continue;
+        const letter = guessArr[i];
+        if (letter === null) continue;
+
+        let foundMatch = false;
         for (let j = 0; j < 6; j++) {
-          if (!used[j] && guessNorm[i] === secretArr[j]) {
-            result[i] = "present";
-            used[j] = true;
+          if (!usedSecret[j] && secretArr[j] === letter) {
+            foundMatch = true;
+            usedSecret[j] = true;
             break;
           }
         }
+        if (foundMatch) {
+          result[i] = "present";
+        }
       }
 
-      // Aplikuj kolory
       for (let i = 0; i < 6; i++) {
         const tile = document.getElementById(`tile-${currentRow}-${i}`);
         tile.classList.add(result[i]);
 
-        const letter = board[currentRow][i];
-        const key = keyElements[letter] || keyElements[letter.toLowerCase()];
+        const originalLetter = board[currentRow][i].toLowerCase();
+        const key = keyElements[originalLetter] || keyElements[normalize(originalLetter)];
         if (key) {
           if (result[i] === "correct") {
             key.classList.remove("present", "absent");
@@ -347,8 +408,7 @@
       }
 
       if (guessNorm === secretNorm) {
-        showMessage("Gratulacje! 🎉");
-        endGame();
+        showModal(true);
         return;
       }
 
@@ -356,14 +416,24 @@
       currentTile = 0;
 
       if (currentRow >= 6) {
-        showMessage(`Przegrana! Hasło: ${secret.toUpperCase()}`);
-        endGame();
+        showModal(false);
       }
     }
 
-    function endGame() {
+    function showModal(isWin) {
       gameOver = true;
-      document.getElementById("restartBtn").style.display = "block";
+      const modal = document.getElementById("modalOverlay");
+      const title = document.getElementById("modalTitle");
+      const wordBox = document.getElementById("modalSecretWord");
+
+      if (isWin) {
+        title.textContent = "Gratulacje! 🎉";
+      } else {
+        title.textContent = "Przegrałeś!";
+      }
+
+      wordBox.textContent = secret.toUpperCase();
+      modal.style.display = "flex";
     }
 
     function showMessage(text) {
@@ -375,14 +445,13 @@
     }
 
     document.addEventListener("keydown", (e) => {
-      if (gameOver) return;
       const key = e.key.toLowerCase();
       if (key === "enter") handleKey("Enter");
+      else if (gameOver) return;
       else if (key === "backspace") handleKey("←");
       else if (/^[a-ząćęłńóśźż]$/.test(key)) handleKey(key);
     });
 
-    // Uruchomienie pobierania słownika po załadowaniu strony
     initGame();
   </script>
 </body>
