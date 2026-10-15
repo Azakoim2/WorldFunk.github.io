@@ -39,7 +39,7 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
-      margin-bottom: 28px;
+      margin-bottom: 20px;
     }
 
     .row {
@@ -73,6 +73,7 @@
       gap: 8px;
       max-width: 520px;
       width: 100%;
+      margin-bottom: 20px;
     }
 
     .keyboard-row {
@@ -105,11 +106,31 @@
     .key.absent  { background: var(--absent); }
 
     .message {
-      margin-top: 18px;
+      margin-bottom: 15px;
       font-size: 1.1rem;
       height: 28px;
       text-align: center;
       color: #ff6b6b;
+      font-weight: bold;
+    }
+
+    .restart-btn {
+      display: none;
+      background-color: var(--correct);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: background 0.2s;
+    }
+
+    .restart-btn:hover {
+      background-color: #538d4e;
     }
   </style>
 </head>
@@ -120,6 +141,7 @@
   <div class="board" id="board"></div>
   <div class="keyboard" id="keyboard"></div>
   <div class="message" id="message">Ładowanie słownika...</div>
+  <button class="restart-btn" id="restartBtn" onclick="resetGame()">Graj ponownie</button>
 
   <script>
     let WORDS = [];
@@ -156,18 +178,46 @@
         // Tworzymy znormalizowany Set do błyskawicznego sprawdzania wpisanych słów
         VALID_WORDS = new Set(WORDS.map(w => normalize(w)));
 
-        // Losujemy sekretne słowo
-        secret = WORDS[Math.floor(Math.random() * WORDS.length)];
-        secretNorm = normalize(secret);
-
-        // Czyszczenie komunikatu o ładowaniu
-        document.getElementById("message").textContent = "";
-        gameOver = false; // Odblokowujemy grę
+        // Uruchamiamy pierwszą rundę
+        resetGame();
 
       } catch (error) {
         console.error(error);
         document.getElementById("message").textContent = "Błąd ładowania słownika!";
       }
+    }
+
+    // Funkcja resetująca / rozpoczynająca nową grę
+    function resetGame() {
+      if (WORDS.length === 0) return;
+
+      // Losujemy sekretne słowo
+      secret = WORDS[Math.floor(Math.random() * WORDS.length)];
+      secretNorm = normalize(secret);
+
+      currentRow = 0;
+      currentTile = 0;
+      gameOver = false;
+      board = Array(6).fill().map(() => Array(6).fill(""));
+
+      // Czyszczenie komunikatów i ukrycie przycisku
+      document.getElementById("message").textContent = "";
+      document.getElementById("restartBtn").style.display = "none";
+
+      // Czyszczenie planszy kafelków
+      for (let r = 0; r < 6; r++) {
+        for (let c = 0; c < 6; c++) {
+          const tile = document.getElementById(`tile-${r}-${c}`);
+          tile.textContent = "";
+          tile.className = "tile";
+        }
+      }
+
+      // Reset kolorów klawiatury
+      Object.values(keyElements).forEach(key => {
+        const k = key.dataset.key;
+        key.className = "key" + (k === "Enter" || k === "←" ? " wide" : "");
+      });
     }
 
     // Tworzenie planszy
@@ -298,7 +348,7 @@
 
       if (guessNorm === secretNorm) {
         showMessage("Gratulacje! 🎉");
-        gameOver = true;
+        endGame();
         return;
       }
 
@@ -307,8 +357,13 @@
 
       if (currentRow >= 6) {
         showMessage(`Przegrana! Hasło: ${secret.toUpperCase()}`);
-        gameOver = true;
+        endGame();
       }
+    }
+
+    function endGame() {
+      gameOver = true;
+      document.getElementById("restartBtn").style.display = "block";
     }
 
     function showMessage(text) {
